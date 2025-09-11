@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Queries - Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white shadow-lg sidebar">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'student_dashboard' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'student_my_queries' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-question-line"></i>
+                    </div>
+                    <span class="ml-3">My Queries</span>
+                </a>
+                <a href="{% url 'student_new_query' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-add-circle-line"></i>
+                    </div>
+                    <span class="ml-3">New Query</span>
+                </a>
+                <a href="{% url 'student_profile_settings' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-user-settings-line"></i>
+                    </div>
+                    <span class="ml-3">Account Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-auto main-content">
+            <header class="bg-primary shadow-sm text-white">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="mr-4 block md:hidden p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-menu-line"></i>
+                            </div>
+                        </button>
+                        <h1 class="text-xl font-semibold">My Queries</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-notification-line"></i>
+                            </div>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2 cursor-pointer">
+                                <img src="https://ui-avatars.com/api/?name=Student+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full object-cover" alt="Profile">
+                                <span class="text-sm font-medium">John Smith</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" id="logoutBtn">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 space-y-6">
+                <!-- Search and Filter Bar -->
+                <div class="bg-white rounded shadow-sm p-4">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ri-search-line text-gray-400"></i>
+                            </div>
+                            <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm" placeholder="Search queries by subject or ID">
+                        </div>
+                        <div class="flex space-x-3">
+                            <select id="statusFilter" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                <option value="all">All Status</option>
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                                <option value="Closed">Closed</option>
+                            </select>
+                            <select id="categoryFilter" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
+                                <option value="all">All Categories</option>
+                                <option value="academic">Academic</option>
+                                <option value="financial">Financial</option>
+                                <option value="technical">Technical</option>
+                                <option value="administrative">Administrative</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Query List -->
+                <div class="bg-white rounded shadow-sm">
+                    <div class="card-header flex items-center justify-between p-4 border-b">
+                        <h3 class="text-base font-semibold">All Queries</h3>
+                        <a href="{% url 'student_new_query' %}" class="text-sm text-white bg-primary hover:bg-red-800 px-3 py-2 rounded-button flex items-center">
+                            <i class="ri-add-line mr-1"></i> New Query
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% if queries %}
+                                    {% for query in queries %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ query.id }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm">{{ query.subject }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm capitalize">{{ query.category }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    {% if query.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                                    {% elif query.status == 'In Progress' %}bg-blue-100 text-blue-800
+                                                    {% elif query.status == 'Resolved' %}bg-green-100 text-green-800
+                                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                    {{ query.status }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ query.updated_at|date:"M d, Y H:i" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">No queries found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-700" id="paginationInfo">
+                                Showing <span class="font-medium">0</span> to <span class="font-medium">0</span> of <span class="font-medium">0</span> results
+                            </div>
+                            <div class="flex-1 flex justify-end">
+                                <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="prevPage">
+                                        <span class="sr-only">Previous</span>
+                                        <i class="ri-arrow-left-s-line"></i>
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-primary hover:bg-red-50" id="currentPage">1</a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" id="nextPage">
+                                        <span class="sr-only">Next</span>
+                                        <i class="ri-arrow-right-s-line"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Query Details Modal -->
+            <div id="queryDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+                    <div class="card-header flex items-center justify-between p-4 bg-primary text-white">
+                        <h3 class="text-base font-semibold">Query Details</h3>
+                        <button onclick="closeQueryDetails()" class="text-white hover:text-gray-200">
+                            <i class="ri-close-line text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div id="queryModalContent">
+                            <!-- Content will be inserted dynamically -->
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <h4 class="font-medium text-gray-900 mb-3">Response History</h4>
+                            <div class="space-y-4" id="responseHistory">
+                                <!-- Responses will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <h4 class="font-medium text-gray-900 mb-3">Add Reply</h4>
+                            <textarea id="replyText" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20" rows="3" placeholder="Type your reply here..."></textarea>
+                            <div class="mt-3 flex justify-end">
+                                <button type="button" class="bg-primary text-white px-4 py-2 rounded-button hover:bg-red-800" id="sendReplyBtn">
+                                    Send Reply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        .chart-container { min-height: 300px; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white shadow-lg sidebar">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'panel_dashboard' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'panel_queries' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-ticket-line"></i>
+                    </div>
+                    <span class="ml-3">Tickets</span>
+                </a>
+                <a href="{% url 'panel_members' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-building-line"></i>
+                    </div>
+                    <span class="ml-3">Departments</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-auto main-content">
+            <header class="bg-primary shadow-sm text-white">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="mr-4 block md:hidden p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-menu-line"></i>
+                            </div>
+                        </button>
+                        <h1 class="text-xl font-semibold">Dashboard Overview</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-notification-line"></i>
+                            </div>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2 cursor-pointer">
+                                <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full object-cover" alt="Profile">
+                                <span class="text-sm font-medium">Admin User</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">2,847</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-red-100 text-primary rounded-full">
+                                <i class="ri-ticket-2-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-green-500 text-sm">+12.5%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Open Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">486</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-orange-100 text-orange-500 rounded-full">
+                                <i class="ri-time-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-red-500 text-sm">+5.2%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Avg. Response Time</p>
+                                <h3 class="text-2xl font-semibold mt-1">2.4h</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-green-100 text-green-500 rounded-full">
+                                <i class="ri-timer-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-green-500 text-sm">-8.3%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Customer Satisfaction</p>
+                                <h3 class="text-2xl font-semibold mt-1">94.2%</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-purple-100 text-purple-500 rounded-full">
+                                <i class="ri-emotion-happy-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-green-500 text-sm">+1.2%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded shadow-sm">
+                        <div class="card-header">
+                            <h3 class="text-base font-semibold">Ticket Trends</h3>
+                        </div>
+                        <div class="p-4">
+                            <canvas id="ticketTrendsChart" class="chart-container"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded shadow-sm">
+                        <div class="card-header">
+                            <h3 class="text-base font-semibold">Department Workload</h3>
+                        </div>
+                        <div class="p-4">
+                            <canvas id="departmentWorkloadChart" class="chart-container"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded shadow-sm">
+                    <div class="card-header">
+                        <h3 class="text-base font-semibold">Recent Tickets</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">#TK-2847</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">Network connectivity issues in office</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">IT Support</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 status-badge">In Progress</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-03-27 09:41</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-red-800">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">#TK-2846</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">Account access restoration request</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">Security</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 status-badge">Resolved</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-03-27 09:15</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-red-800">View Details</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">#TK-2845</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">Software license renewal inquiry</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">Billing</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 status-badge">Urgent</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-03-27 08:52</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <button class="text-primary hover:text-red-800">View Details</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ticket Trends Chart
+            const ticketTrendsCtx = document.getElementById('ticketTrendsChart').getContext('2d');
+            new Chart(ticketTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'New Tickets',
+                        data: [65, 59, 80, 81, 56, 55, 40],
+                        borderColor: '#a52a2a',
+                        backgroundColor: 'rgba(165, 42, 42, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Resolved Tickets',
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Department Workload Chart
+            const departmentWorkloadCtx = document.getElementById('departmentWorkloadChart').getContext('2d');
+            new Chart(departmentWorkloadCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['IT', 'Maintenance', 'Admin', 'Security', 'Housekeeping'],
+                    datasets: [{
+                        data: [45, 38, 25, 15, 20],
+                        backgroundColor: [
+                            '#a52a2a',
+                            '#10B981',
+                            '#F59E0B',
+                            '#3B82F6',
+                            '#8B5CF6'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Department Workload Distribution',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Toggle user menu
+        document.getElementById('userMenuBtn').addEventListener('click', function() {
+            document.getElementById('userMenu').classList.toggle('hidden');
+        });
+    
+        // Close user menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            
+            if (!userMenu.contains(event.target) && !userMenuBtn.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    
+        // Sidebar toggle for mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('hidden');
+            document.querySelector('.main-content').classList.toggle('ml-0');
+        });
+    </script>
+</body>
+</html>

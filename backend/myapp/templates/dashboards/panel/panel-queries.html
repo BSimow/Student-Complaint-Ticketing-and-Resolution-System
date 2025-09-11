@@ -1,0 +1,652 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        .chart-container { min-height: 300px; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white shadow-lg sidebar">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'panel_dashboard' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'panel_queries' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-ticket-line"></i>
+                    </div>
+                    <span class="ml-3">Tickets</span>
+                </a>
+                <a href="{% url 'panel_members' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-building-line"></i>
+                    </div>
+                    <span class="ml-3">Departments</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-auto main-content">
+            <header class="bg-primary shadow-sm text-white">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="mr-4 block md:hidden p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-menu-line"></i>
+                            </div>
+                        </button>
+                        <h1 class="text-xl font-semibold">Tickets Overview</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-notification-line"></i>
+                            </div>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2 cursor-pointer">
+                                <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full object-cover" alt="Profile">
+                                <span class="text-sm font-medium">Analyst User</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">2,847</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-red-100 text-primary rounded-full">
+                                <i class="ri-ticket-2-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-green-500 text-sm">+12.5%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Open Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">486</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-orange-100 text-orange-500 rounded-full">
+                                <i class="ri-time-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-red-500 text-sm">+5.2%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Closed Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">2,361</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-green-100 text-green-500 rounded-full">
+                                <i class="ri-checkbox-circle-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-green-500 text-sm">+15.3%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded shadow-sm dashboard-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Overdue Tickets</p>
+                                <h3 class="text-2xl font-semibold mt-1">124</h3>
+                            </div>
+                            <div class="w-10 h-10 flex items-center justify-center bg-red-100 text-red-500 rounded-full">
+                                <i class="ri-error-warning-line ri-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-red-500 text-sm">-5.8%</span>
+                            <span class="text-gray-500 text-sm ml-1">from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded shadow-sm">
+                        <div class="card-header">
+                            <h3 class="text-base font-semibold">Tickets by Department</h3>
+                        </div>
+                        <div class="p-4">
+                            <div id="departmentChart" class="chart-container"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded shadow-sm">
+                        <div class="card-header">
+                            <h3 class="text-base font-semibold">Resolution Time Trends</h3>
+                        </div>
+                        <div class="p-4">
+                            <div id="resolutionChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded shadow-sm">
+                    <div class="p-6 border-b">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="relative">
+                                    <input type="text" placeholder="Search tickets..." class="pl-10 pr-4 py-2 border rounded-button focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+                                        <i class="ri-search-line text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <div class="relative" id="statusFilter">
+                                    <button class="px-4 py-2 border rounded-button flex items-center space-x-2 bg-white cursor-pointer" onclick="toggleStatusDropdown()">
+                                        <span>Status</span>
+                                        <i class="ri-arrow-down-s-line"></i>
+                                    </button>
+                                    <div class="absolute hidden mt-2 w-48 bg-white border rounded shadow-lg z-10" id="statusDropdown">
+                                        <div class="p-2">
+                                            <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                                <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                                <span class="ml-2">Open</span>
+                                            </label>
+                                            <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                                <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                                <span class="ml-2">In Progress</span>
+                                            </label>
+                                            <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
+                                                <input type="checkbox" class="form-checkbox h-4 w-4 text-primary">
+                                                <span class="ml-2">Resolved</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button class="px-4 py-2 text-gray-700 border border-gray-300 rounded-button flex items-center space-x-2 cursor-pointer" onclick="exportToCSV()">
+                                    <i class="ri-download-line"></i>
+                                    <span>Export CSV</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto table-container">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Ticket ID
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Title
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Status
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Assigned To
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Assigned Department
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        Created At
+                                        <i class="ri-arrow-up-s-line ml-1"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="ticketsTableBody">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #TK-2025-001
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Network connectivity issues in Building C
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Open
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Emily Johnson
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        IT Support
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2025-03-27 09:15
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #TK-2025-002
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Printer malfunction on 4th floor
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            In Progress
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Michael Chen
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Facilities
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2025-03-27 10:30
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #TK-2025-003
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Software license renewal required
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Resolved
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Sarah Williams
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        IT Support
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2025-03-27 11:45
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #TK-2025-004
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Email server maintenance request
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Open
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Unassigned
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        IT Support
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2025-03-27 13:20
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" class="form-checkbox h-4 w-4 text-primary rounded">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #TK-2025-005
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        VPN access issues for remote team
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            In Progress
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Emily Johnson
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        IT Support
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        2025-03-27 14:10
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-4 flex items-center justify-between border-t">
+                        <div class="flex items-center">
+                            <span class="text-sm text-gray-700">
+                                Showing
+                                <span class="font-medium">1</span>
+                                to
+                                <span class="font-medium">5</span>
+                                of
+                                <span class="font-medium">97</span>
+                                results
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 border rounded-button disabled:opacity-50 cursor-pointer" disabled>
+                                Previous
+                            </button>
+                            <button class="px-3 py-1 border rounded-button text-white bg-primary cursor-pointer">
+                                1
+                            </button>
+                            <button class="px-3 py-1 border rounded-button hover:bg-gray-50 cursor-pointer">
+                                2
+                            </button>
+                            <button class="px-3 py-1 border rounded-button hover:bg-gray-50 cursor-pointer">
+                                3
+                            </button>
+                            <button class="px-3 py-1 border rounded-button hover:bg-gray-50 cursor-pointer">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="assignModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded shadow-sm p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium">Assign Bulk Tickets</h3>
+                <button onclick="hideAssignModal()" class="text-gray-400 hover:text-gray-500">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Assign to
+                </label>
+                <select class="w-full border rounded-button px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option>Select team member</option>
+                    <option>Emily Johnson</option>
+                    <option>Michael Chen</option>
+                    <option>Sarah Williams</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="hideAssignModal()" class="px-4 py-2 border rounded-button hover:bg-gray-50 cursor-pointer">
+                    Cancel
+                </button>
+                <button onclick="assignTickets()" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-red-800 cursor-pointer">
+                    Assign
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        function initCharts() {
+            const departmentChart = echarts.init(document.getElementById('departmentChart'));
+            const resolutionChart = echarts.init(document.getElementById('resolutionChart'));
+            
+            const departmentOption = {
+                animation: false,
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['IT', 'HR', 'Finance', 'Operations', 'Sales'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#E5E7EB'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#1F2937'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: '#1F2937'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#E5E7EB'
+                        }
+                    }
+                },
+                series: [{
+                    data: [120, 80, 60, 40, 90],
+                    type: 'bar',
+                    itemStyle: {
+                        color: '#a52a2a',
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }]
+            };
+
+            const resolutionOption = {
+                animation: false,
+                tooltip: {
+                    trigger: 'axis'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisLine: {
+                        lineStyle: {
+                            color: '#E5E7EB'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#1F2937'
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: '#1F2937'
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#E5E7EB'
+                        }
+                    }
+                },
+                series: [{
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'none',
+                    itemStyle: {
+                        color: '#a52a2a'
+                    },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(165, 42, 42, 0.2)'
+                            }, {
+                                offset: 1,
+                                color: 'rgba(165, 42, 42, 0)'
+                            }]
+                        }
+                    }
+                }]
+            };
+
+            departmentChart.setOption(departmentOption);
+            resolutionChart.setOption(resolutionOption);
+
+            window.addEventListener('resize', function() {
+                departmentChart.resize();
+                resolutionChart.resize();
+            });
+        }
+
+        function toggleStatusDropdown() {
+            const dropdown = document.getElementById('statusDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function showAssignModal() {
+            document.getElementById('assignModal').classList.remove('hidden');
+        }
+
+        function hideAssignModal() {
+            document.getElementById('assignModal').classList.add('hidden');
+        }
+
+        function assignTickets() {
+            hideAssignModal();
+        }
+
+        function exportToCSV() {
+            const link = document.createElement('a');
+            link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('Ticket ID,Title,Status,Assigned To,Assigned Department,Created At\n');
+            link.download = 'tickets_export.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generateSLAReport() {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+            notification.textContent = 'SLA Report generation started';
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        document.addEventListener('click', function(event) {
+            const statusFilter = document.getElementById('statusFilter');
+            const statusDropdown = document.getElementById('statusDropdown');
+            if (!statusFilter.contains(event.target)) {
+                statusDropdown.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
+    </script>
+</body>
+</html>

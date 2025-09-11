@@ -1,0 +1,37 @@
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('dashboard/panel/profile-settings/', views.panel_profile_settings, name='panel_profile_settings'),
+    path('dashboard/admin/profile-settings/', views.admin_profile_settings, name='admin_profile_settings'),
+    path('dashboard/warden/profile-settings/', views.warden_profile_settings, name='warden_profile_settings'),
+    path('dashboard/rector/profile-settings/', views.rector_profile_settings, name='rector_profile_settings'),
+    path('dashboard/maintenance/profile-settings/', views.maintenance_profile_settings, name='maintenance_profile_settings'),
+    path('dashboard/it/profile-settings/', views.it_profile_settings, name='it_profile_settings'),
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.signup_view, name='signup'),
+    path('logout/', views.logout_view, name='logout'),
+    path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('student/profile-settings/', views.student_profile_settings, name='student_profile_settings'),
+    path('student/new-query/', views.student_new_query, name='student_new_query'),
+    path('student/my-queries/', views.student_my_queries, name='student_my_queries'),
+    path('dashboard/panel/', views.dashboard_panel, name='panel_dashboard'),
+    path('dashboard/panel/members/', views.dashboard_panel_members, name='panel_members'),
+    path('dashboard/panel/queries/', views.dashboard_panel_queries, name='panel_queries'),
+    path('dashboard/admin/', views.dashboard_admin, name='dashboard_admin'),
+    path('dashboard/admin/members/', views.dashboard_admin_members, name='dashboard_admin_members'),
+    path('dashboard/admin/queries/', views.dashboard_admin_queries, name='dashboard_admin_queries'),
+    path('dashboard/warden/', views.dashboard_warden, name='dashboard_warden'),
+    path('dashboard/warden/members/', views.dashboard_warden_members, name='dashboard_warden_members'),
+    path('dashboard/warden/queries/', views.dashboard_warden_queries, name='dashboard_warden_queries'),
+    path('dashboard/rector/', views.dashboard_rector, name='dashboard_rector'),
+    path('dashboard/rector/members/', views.dashboard_rector_members, name='dashboard_rector_members'),
+    path('dashboard/rector/queries/', views.dashboard_rector_queries, name='dashboard_rector_queries'),
+    path('dashboard/maintenance/', views.dashboard_maintenance, name='dashboard_maintenance'),
+    path('dashboard/maintenance/members/', views.dashboard_maintenance_members, name='dashboard_maintenance_members'),
+    path('dashboard/maintenance/queries/', views.dashboard_maintenance_queries, name='dashboard_maintenance_queries'),
+    path('dashboard/it/', views.dashboard_it, name='dashboard_it'),
+    path('dashboard/it/members/', views.dashboard_it_members, name='dashboard_it_members'),
+    path('dashboard/it/queries/', views.dashboard_it_queries, name='dashboard_it_queries'),
+]

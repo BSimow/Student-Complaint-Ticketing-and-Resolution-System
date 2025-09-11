@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Department - Queries | Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'dashboard_it' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'dashboard_it_queries' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-question-line"></i>
+                    </div>
+                    <span class="ml-3">Department Queries</span>
+                </a>
+                <a href="{% url 'dashboard_it_members' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <span class="ml-3">Members</span>
+                </a>
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-primary shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h1 class="text-xl font-semibold text-white">IT Department - Queries</h1>
+                    <div class="flex items-center space-x-4">
+                        <button class="text-white hover:bg-red-800 rounded-full p-2">
+                            <i class="ri-notification-line"></i>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2">
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=8b2323&color=fff" 
+                                     class="w-8 h-8 rounded-full" alt="Profile">
+                                <span class="text-white">John Doe</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="../../it-profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="../../it-settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="../../login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6">
+                <!-- Search and Filter Section -->
+                <div class="mb-6 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex-1 min-w-[300px]">
+                        <div class="relative">
+                            <input type="text" placeholder="Search queries..." 
+                                   class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-primary">
+                            <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <select class="border rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        <select class="border rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                            <option value="">All Priority</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Queries Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#Q-2024-001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Network Connectivity Issue</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">John Smith</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bob Johnson</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">High</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-primary hover:text-red-700 mr-3">Update</button>
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#Q-2024-002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Software Installation Request</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sarah Wilson</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Alice Smith</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Resolved</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#Q-2024-003</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Email Configuration</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mike Brown</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Unassigned</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Low</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Pending</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-primary hover:text-red-700 mr-3">Assign</button>
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        Showing 1 to 3 of 15 entries
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1 border rounded hover:bg-gray-50">Previous</button>
+                        <button class="px-3 py-1 border rounded bg-primary text-white">1</button>
+                        <button class="px-3 py-1 border rounded hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border rounded hover:bg-gray-50">3</button>
+                        <button class="px-3 py-1 border rounded hover:bg-gray-50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../script.js"></script>
+</body>
+</html>

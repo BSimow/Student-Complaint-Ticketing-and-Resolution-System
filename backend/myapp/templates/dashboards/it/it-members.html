@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Department - Members | Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        .avatar-initial {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            background-color: #a52a2a;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'dashboard_it' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'dashboard_it_queries' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-question-line"></i>
+                    </div>
+                    <span class="ml-3">Department Queries</span>
+                </a>
+                <a href="{% url 'dashboard_it_members' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <span class="ml-3">Members</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-primary shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h1 class="text-xl font-semibold text-white">IT Department - Members</h1>
+                    <div class="flex items-center space-x-4">
+                        <button id="addMemberBtn" class="bg-white text-primary px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center">
+                            <i class="ri-user-add-line mr-2"></i>
+                            Add Member
+                        </button>
+                        <button class="text-white hover:bg-red-800 rounded-full p-2">
+                            <i class="ri-notification-line"></i>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2">
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=8b2323&color=fff" 
+                                     class="w-8 h-8 rounded-full" alt="Profile">
+                                <span class="text-white">John Doe</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="../../it-profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="../../it-settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="../../login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">JD</div>
+                                                <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">john.doe@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Department Head</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">AS</div>
+                                                <div class="text-sm font-medium text-gray-900">Alice Smith</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">alice.smith@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Senior Developer</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">BJ</div>
+                                                <div class="text-sm font-medium text-gray-900">Bob Johnson</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">bob.johnson@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Network Admin</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">CW</div>
+                                                <div class="text-sm font-medium text-gray-900">Charlie Williams</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">charlie.williams@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">IT Support</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">On-Leave</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900">Add New Member</h3>
+                    <button id="closeAddMemberModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form id="addMemberForm" method="POST" action="" class="mt-4">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="name" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" name="email" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Position</label>
+                            <select name="position" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Select Position</option>
+                                <option value="Department Head">Department Head</option>
+                                <option value="Senior Developer">Senior Developer</option>
+                                <option value="Network Admin">Network Admin</option>
+                                <option value="IT Support">IT Support</option>
+                                <option value="System Administrator">System Administrator</option>
+                                <option value="Software Engineer">Software Engineer</option>
+                                <option value="Database Administrator">Database Administrator</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Status</label>
+                            <select name="status" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="Active">Active</option>
+                                <option value="On-Leave">On-Leave</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" id="cancelAddMember"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-red-700">
+                            Add Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const addMemberBtn = document.getElementById('addMemberBtn');
+        const addMemberModal = document.getElementById('addMemberModal');
+        const closeAddMemberModal = document.getElementById('closeAddMemberModal');
+        const cancelAddMember = document.getElementById('cancelAddMember');
+        const addMemberForm = document.getElementById('addMemberForm');
+
+        function toggleModal() {
+            addMemberModal.classList.toggle('hidden');
+        }
+
+        addMemberBtn.addEventListener('click', toggleModal);
+        closeAddMemberModal.addEventListener('click', toggleModal);
+        cancelAddMember.addEventListener('click', toggleModal);
+
+        // Close modal when clicking outside
+        addMemberModal.addEventListener('click', (e) => {
+            if (e.target === addMemberModal) {
+                toggleModal();
+            }
+        });
+
+        // Form submission
+        addMemberForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(addMemberForm);
+            const memberData = Object.fromEntries(formData);
+            
+            // Here you would typically send the data to your backend
+            console.log('New member data:', memberData);
+            
+            // Add the new member to the table
+            const tableBody = document.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            
+            // Generate initials for avatar
+            const nameParts = memberData.name.split(' ');
+            const initials = nameParts.map(part => part[0]).join('');
+            
+            // Set status class based on status selection
+            let statusClass = '';
+            switch(memberData.status) {
+                case 'Active':
+                    statusClass = 'bg-green-100 text-green-800';
+                    break;
+                case 'On-Leave':
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                    break;
+                case 'Inactive':
+                    statusClass = 'bg-gray-100 text-gray-800';
+                    break;
+            }
+            
+            newRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="avatar-initial mr-3">${initials}</div>
+                        <div class="text-sm font-medium text-gray-900">${memberData.name}</div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">${memberData.email}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${memberData.position}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${memberData.status}</span>
+                </td>
+            `;
+            
+            tableBody.appendChild(newRow);
+            
+            // Close the modal and reset the form
+            addMemberForm.reset();
+            toggleModal();
+        });
+    </script>
+
+    <script src="../../script.js"></script>
+</body>
+</html>

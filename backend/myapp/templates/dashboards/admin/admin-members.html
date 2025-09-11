@@ -1,0 +1,398 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Department - Members | Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#a52a2a',
+                        secondary: '#5f6368'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../styles.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        .avatar-initial {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            background-color: #a52a2a;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 admin">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white shadow-lg sidebar">
+            <div class="bg-primary p-4 border-b">
+                <span class="font-['Pacifico'] text-2xl text-white">Complaint Portal</span>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="{% url 'dashboard_admin' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-dashboard-line"></i>
+                    </div>
+                    <span class="ml-3">Dashboard</span>
+                </a>
+                <a href="{% url 'dashboard_admin_queries' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-question-line"></i>
+                    </div>
+                    <span class="ml-3">Department Queries</span>
+                </a>
+                <a href="{% url 'dashboard_admin_members' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-team-line"></i>
+                    </div>
+                    <span class="ml-3">Members</span>
+                </a>
+              
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-auto main-content">
+            <header class="bg-primary shadow-sm text-white">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center">
+                        <button id="sidebarToggle" class="mr-4 block md:hidden p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-menu-line"></i>
+                            </div>
+                        </button>
+                        <h1 class="text-xl font-semibold">Admin Department - Members</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="addMemberBtn" class="bg-white text-primary px-4 py-2 rounded-lg hover:bg-gray-100 flex items-center">
+                            <i class="ri-user-add-line mr-2"></i>
+                            Add Member
+                        </button>
+                        <button class="p-2 text-white hover:bg-red-800 rounded-full">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-notification-line"></i>
+                            </div>
+                        </button>
+                        <div class="relative">
+                            <button id="userMenuBtn" class="flex items-center space-x-2 cursor-pointer">
+                                <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full object-cover" alt="Profile">
+                                <span class="text-sm font-medium">Admin User</span>
+                            </button>
+                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
+                                <a href="../../admin-profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                <a href="../../admin-settings.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                                <a href="../../login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">JD</div>
+                                                <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">john.doe@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">IT</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Department Head</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-primary hover:text-red-700 mr-3">Edit</button>
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">JS</div>
+                                                <div class="text-sm font-medium text-gray-900">Jane Smith</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">jane.smith@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Maintenance</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Department Head</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-primary hover:text-red-700 mr-3">Edit</button>
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="avatar-initial mr-3">RJ</div>
+                                                <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">robert.johnson@example.com</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Academic</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Department Head</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">On Leave</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button class="text-primary hover:text-red-700 mr-3">Edit</button>
+                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900">Add New Member</h3>
+                    <button id="closeAddMemberModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form id="addMemberForm" method="POST" action="" class="mt-4">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="name" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" name="email" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Department</label>
+                            <select name="department" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Select Department</option>
+                                <option value="Admin">Admin</option>
+                                <option value="IT">IT</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Academic">Academic</option>
+                                <option value="Finance">Finance</option>
+                                <option value="HR">HR</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Role</label>
+                            <select name="role" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="">Select Role</option>
+                                <option value="Department Head">Department Head</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Staff">Staff</option>
+                                <option value="Coordinator">Coordinator</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Assistant">Assistant</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Status</label>
+                            <select name="status" required
+                                class="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary">
+                                <option value="Active">Active</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" id="cancelAddMember"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-primary text-white rounded-md hover:bg-red-700">
+                            Add Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const addMemberBtn = document.getElementById('addMemberBtn');
+        const addMemberModal = document.getElementById('addMemberModal');
+        const closeAddMemberModal = document.getElementById('closeAddMemberModal');
+        const cancelAddMember = document.getElementById('cancelAddMember');
+        const addMemberForm = document.getElementById('addMemberForm');
+
+        function toggleModal() {
+            addMemberModal.classList.toggle('hidden');
+        }
+
+        addMemberBtn.addEventListener('click', toggleModal);
+        closeAddMemberModal.addEventListener('click', toggleModal);
+        cancelAddMember.addEventListener('click', toggleModal);
+
+        // Close modal when clicking outside
+        addMemberModal.addEventListener('click', (e) => {
+            if (e.target === addMemberModal) {
+                toggleModal();
+            }
+        });
+
+        // Form submission
+        addMemberForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(addMemberForm);
+            const memberData = Object.fromEntries(formData);
+            
+            // Add the new member to the table
+            const tableBody = document.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            
+            // Generate initials for avatar
+            const nameParts = memberData.name.split(' ');
+            const initials = nameParts.map(part => part[0]).join('');
+            
+            // Set status class based on status selection
+            let statusClass = '';
+            switch(memberData.status) {
+                case 'Active':
+                    statusClass = 'bg-green-100 text-green-800';
+                    break;
+                case 'On Leave':
+                    statusClass = 'bg-yellow-100 text-yellow-800';
+                    break;
+                case 'Inactive':
+                    statusClass = 'bg-gray-100 text-gray-800';
+                    break;
+            }
+            
+            newRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="avatar-initial mr-3">${initials}</div>
+                        <div class="text-sm font-medium text-gray-900">${memberData.name}</div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-500">${memberData.email}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${memberData.department}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${memberData.role}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${memberData.status}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button class="text-primary hover:text-red-700 mr-3">Edit</button>
+                    <button class="text-gray-600 hover:text-gray-900">View</button>
+                </td>
+            `;
+            
+            tableBody.appendChild(newRow);
+            
+            // Close the modal and reset the form
+            addMemberForm.reset();
+            toggleModal();
+        });
+        
+        // User menu functionality
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userMenu = document.getElementById('userMenu');
+        
+        userMenuBtn.addEventListener('click', () => {
+            userMenu.classList.toggle('hidden');
+        });
+        
+        // Close user menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userMenu.contains(e.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+        
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+        });
+    </script>
+
+    <script src="../../script.js"></script>
+</body>
+</html>
