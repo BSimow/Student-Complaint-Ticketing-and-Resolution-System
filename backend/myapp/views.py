@@ -1,3 +1,8 @@
+from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib import messages
+
 # Profile settings views for each department
 def panel_profile_settings(request):
     if not request.user.is_authenticated:
@@ -41,18 +46,15 @@ def it_profile_settings(request):
         return redirect('login')
     return render(request, 'dashboards/it/it-profile-settings.html')
 
-from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib import messages
-
 # Panel (Data Analyst) Dashboards
 def dashboard_panel(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='panel').exists():
         return redirect('login')
-    return render(request, 'dashboards/panel/panel-dashboard.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Finance_Admin').order_by('-created_at')
+    return render(request, 'dashboards/panel/panel-dashboard.html', {'complaints': complaints})
 
 def dashboard_panel_members(request):
     if not request.user.is_authenticated:
@@ -66,7 +68,10 @@ def dashboard_panel_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='panel').exists():
         return redirect('login')
-    return render(request, 'dashboards/panel/panel-queries.html')
+    from .models import Complaint
+    # Panel handles Finance & Admin category
+    complaints = Complaint.objects.filter(category='Finance_Admin').order_by('-created_at')
+    return render(request, 'dashboards/panel/panel-queries.html', {'complaints': complaints})
 
 
 def logout_view(request):
@@ -138,14 +143,33 @@ def student_profile_settings(request):
 def student_new_query(request):
     if not request.user.is_authenticated:
         return redirect('login')
+    if request.method == 'POST':
+        from .models import Complaint
+        from django.utils import timezone
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        category = request.POST.get('category')
+        priority = request.POST.get('priority', 'Medium')
+        
+        # Since the table is managed=False, we need to insert manually
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("""
+            INSERT INTO complaints (student_id, title, description, category, priority, status, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, [request.user.id, title, description, category, priority, 'Open', timezone.now()])
+        
+        messages.success(request, 'Complaint submitted successfully!')
+        return redirect('student_my_queries')
     return render(request, 'student/new-query.html')
 
 def student_my_queries(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    from .models import Query
-    queries = Query.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'student/my-queries.html', {'queries': queries})
+    from .models import Complaint
+    # Assuming we can match student_id to user.id or use another mapping
+    complaints = Complaint.objects.filter(student_id=request.user.id).order_by('-created_at')
+    return render(request, 'student/my-queries.html', {'complaints': complaints})
 
 def admin_index(request):
     return redirect('/admin/')
@@ -170,7 +194,10 @@ def dashboard_admin(request):
         return redirect('login')
     if not request.user.groups.filter(name='admin').exists():
         return redirect('login')
-    return render(request, 'dashboards/admin/admin-dashboard.html')
+    from .models import Complaint
+    # Admin can see all complaints for oversight
+    complaints = Complaint.objects.all().order_by('-created_at')
+    return render(request, 'dashboards/admin/admin-dashboard.html', {'complaints': complaints})
 
 def dashboard_admin_members(request):
     if not request.user.is_authenticated:
@@ -184,14 +211,19 @@ def dashboard_admin_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='admin').exists():
         return redirect('login')
-    return render(request, 'dashboards/admin/admin-queries.html')
+    from .models import Complaint
+    # Admin can see all complaints for oversight
+    complaints = Complaint.objects.all().order_by('-created_at')
+    return render(request, 'dashboards/admin/admin-queries.html', {'complaints': complaints})
 
 def dashboard_warden(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='warden').exists():
         return redirect('login')
-    return render(request, 'dashboards/warden/warden-dashboard.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Certificates_Documents').order_by('-created_at')
+    return render(request, 'dashboards/warden/warden-dashboard.html', {'complaints': complaints})
 
 def dashboard_warden_members(request):
     if not request.user.is_authenticated:
@@ -205,17 +237,21 @@ def dashboard_warden_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='warden').exists():
         return redirect('login')
-    return render(request, 'dashboards/warden/warden-queries.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Certificates_Documents').order_by('-created_at')
+    return render(request, 'dashboards/warden/warden-queries.html', {'complaints': complaints})
 
 def dashboard_rector(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='rector').exists():
         return redirect('login')
-    return render(request, 'dashboards/rector/rector-dashboard.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Courses_Training').order_by('-created_at')
+    return render(request, 'dashboards/rector/rector-dashboard.html', {'complaints': complaints})
 
 def dashboard_rector_members(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='rector').exists():
         return redirect('login')
@@ -226,14 +262,18 @@ def dashboard_rector_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='rector').exists():
         return redirect('login')
-    return render(request, 'dashboards/rector/rector-queries.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Courses_Training').order_by('-created_at')
+    return render(request, 'dashboards/rector/rector-queries.html', {'complaints': complaints})
 
 def dashboard_maintenance(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='maintenance').exists():
         return redirect('login')
-    return render(request, 'dashboards/maintenance/maintenance-dashboard.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Facilities_Logistics').order_by('-created_at')
+    return render(request, 'dashboards/maintenance/maintenance-dashboard.html', {'complaints': complaints})
 
 def dashboard_maintenance_members(request):
     if not request.user.is_authenticated:
@@ -247,14 +287,18 @@ def dashboard_maintenance_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='maintenance').exists():
         return redirect('login')
-    return render(request, 'dashboards/maintenance/maintenance-queries.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='Facilities_Logistics').order_by('-created_at')
+    return render(request, 'dashboards/maintenance/maintenance-queries.html', {'complaints': complaints})
 
 def dashboard_it(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if not request.user.groups.filter(name='it').exists():
         return redirect('login')
-    return render(request, 'dashboards/it/it-dashboard.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='IT_Support').order_by('-created_at')
+    return render(request, 'dashboards/it/it-dashboard.html', {'complaints': complaints})
 
 def dashboard_it_members(request):
     if not request.user.is_authenticated:
@@ -268,4 +312,6 @@ def dashboard_it_queries(request):
         return redirect('login')
     if not request.user.groups.filter(name='it').exists():
         return redirect('login')
-    return render(request, 'dashboards/it/it-queries.html')
+    from .models import Complaint
+    complaints = Complaint.objects.filter(category='IT_Support').order_by('-created_at')
+    return render(request, 'dashboards/it/it-queries.html', {'complaints': complaints})

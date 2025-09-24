@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('signup/', views.signup_view, name='signup'),
+    path('logout/', views.logout_view, name='logout'),
     path('dashboard/panel/profile-settings/', views.panel_profile_settings, name='panel_profile_settings'),
     path('dashboard/admin/profile-settings/', views.admin_profile_settings, name='admin_profile_settings'),
     path('dashboard/warden/profile-settings/', views.warden_profile_settings, name='warden_profile_settings'),
@@ -10,8 +12,6 @@ urlpatterns = [
     path('dashboard/maintenance/profile-settings/', views.maintenance_profile_settings, name='maintenance_profile_settings'),
     path('dashboard/it/profile-settings/', views.it_profile_settings, name='it_profile_settings'),
     path('login/', views.login_view, name='login'),
-    path('signup/', views.signup_view, name='signup'),
-    path('logout/', views.logout_view, name='logout'),
     path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
     path('student/profile-settings/', views.student_profile_settings, name='student_profile_settings'),
     path('student/new-query/', views.student_new_query, name='student_new_query'),
