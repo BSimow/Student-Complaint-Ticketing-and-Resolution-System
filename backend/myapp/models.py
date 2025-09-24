@@ -1,7 +1,22 @@
 
-
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
+
+class Student(models.Model):
+	student_id = models.IntegerField(primary_key=True)
+	name = models.CharField(max_length=255, blank=True, null=True)
+	email = models.CharField(max_length=255, blank=True, null=True)
+	phone = models.CharField(max_length=255, blank=True, null=True)
+
+	class Meta:
+		db_table = 'students'
+		managed = False
+
+	def __str__(self):
+		return f"{self.name} (ID: {self.student_id})"
+
+
 
 class UserProfile(models.Model):
 	USER_ROLES = [
@@ -15,6 +30,7 @@ class UserProfile(models.Model):
 	]
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	role = models.CharField(max_length=20, choices=USER_ROLES, default='student')
+	student_db_id = models.IntegerField(null=True, blank=True)  # Maps to student ID in external DB
 
 	def __str__(self):
 		return f"{self.user.email} - {self.role}"
@@ -26,7 +42,7 @@ class Complaint(models.Model):
 		('Resolved', 'Resolved'),
 		('Closed', 'Closed'),
 	]
-	
+
 	DEPARTMENT_CHOICES = [
 		('it', 'IT'),
 		('maintenance', 'Maintenance'),
@@ -35,7 +51,7 @@ class Complaint(models.Model):
 		('warden', 'Warden'),
 		('panel', 'Panel'),
 	]
-	
+
 	CATEGORY_CHOICES = [
 		('Certificates_Documents', 'Certificates & Documents'),
 		('Finance_Admin', 'Finance & Admin'),
@@ -43,14 +59,14 @@ class Complaint(models.Model):
 		('Courses_Training', 'Courses & Training'),
 		('Facilities_Logistics', 'Facilities & Logistics'),
 	]
-	
+
 	PRIORITY_CHOICES = [
 		('Low', 'Low'),
 		('Medium', 'Medium'),
 		('High', 'High'),
 		('Critical', 'Critical'),
 	]
-	
+
 	complaint_id = models.AutoField(primary_key=True)
 	student_id = models.IntegerField()  # Reference to student, not FK to User
 	title = models.CharField(max_length=255)
@@ -60,7 +76,7 @@ class Complaint(models.Model):
 	status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='Open')
 	created_at = models.DateTimeField()
 	resolved_at = models.DateTimeField(null=True, blank=True)
-	
+
 	# Add a virtual property to map to departments based on category
 	@property
 	def department(self):
@@ -76,7 +92,7 @@ class Complaint(models.Model):
 	class Meta:
 		db_table = 'complaints'
 		managed = False  # Don't let Django manage this table
-		
+
 	def __str__(self):
 		return f"{self.title} (Student ID: {self.student_id}) - {self.category}"
 

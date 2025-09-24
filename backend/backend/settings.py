@@ -85,7 +85,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'university_complaints',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': '654321',
         'HOST': 'localhost',   # or the server IP
         'PORT': '3307',        # default MySQL port
         'OPTIONS': {
@@ -99,18 +99,19 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    
+    # {
+    #       'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    #   },
+    #   {
+    #       'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    #   },
+    #   {
+    #       'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    #   },
+    #   {
+    #       'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    #   },
 ]
 
 

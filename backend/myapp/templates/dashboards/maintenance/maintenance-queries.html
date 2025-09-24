@@ -140,87 +140,41 @@
                 <div class="bg-white rounded-lg shadow">
                     <div class="p-6">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full">
+                            <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
                                     <tr class="bg-gray-50">
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Query ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reported By</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for complaint in complaints %}
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#M-2024-001</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">AC Not Working</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Block A - Room 101</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">John Smith</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Robert Johnson</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ complaint.complaint_id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ complaint.student_id }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ complaint.title }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ complaint.category }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">High</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ complaint.priority|lower }}-100 text-{{ complaint.priority|lower }}-800">{{ complaint.priority }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ complaint.status|lower }}-100 text-{{ complaint.status|lower }}-800">{{ complaint.status }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button class="text-primary hover:text-red-700 mr-3">Update</button>
-                                            <button class="text-gray-600 hover:text-gray-900">View</button>
+                                            <button class="text-primary hover:text-red-700 mr-3">View</button>
+                                            <button class="text-gray-600 hover:text-gray-900">Update</button>
                                         </td>
                                     </tr>
+                                    {% empty %}
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#M-2024-002</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Light Fixture Replacement</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Block B - Common Area</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sarah Wilson</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Michael Brown</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Resolved</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button class="text-gray-600 hover:text-gray-900">View</button>
-                                        </td>
+                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No queries found.</td>
                                     </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#M-2024-003</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Leaking Faucet</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Block C - Room 205</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">David Lee</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Unassigned</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Low</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Pending</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button class="text-primary hover:text-red-700 mr-3">Assign</button>
-                                            <button class="text-gray-600 hover:text-gray-900">View</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#M-2024-004</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Broken Chair</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Library - Reading Area</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Emma Thompson</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">James Wilson</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Low</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">In Progress</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button class="text-primary hover:text-red-700 mr-3">Update</button>
-                                            <button class="text-gray-600 hover:text-gray-900">View</button>
-                                        </td>
-                                    </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
