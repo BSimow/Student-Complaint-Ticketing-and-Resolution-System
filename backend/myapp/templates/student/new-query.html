@@ -2,398 +2,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit New Query - Student Query</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#a52a2a',
-                        secondary: '#5f6368'
-                    },
-                    borderRadius: {
-                        'none': '0px',
-                        'sm': '4px',
-                        DEFAULT: '8px',
-                        'md': '12px',
-                        'lg': '16px',
-                        'xl': '20px',
-                        '2xl': '24px',
-                        '3xl': '32px',
-                        'full': '9999px',
-                        'button': '8px'
-                    }
-                }
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submit New Query - Student Query</title>
+
+  <!-- Tailwind CDN + fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { primary: '#a52a2a', secondary: '#5f6368' },
+          borderRadius: { button: '8px' }
         }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-    <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-    </style>
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+  <style>
+    :where([class^="ri-"])::before { content: "\f3c2"; }
+    .btn-primary{ padding:.55rem 1rem; border-radius:8px; background:#a52a2a; color:#fff; font-weight:600; transition:background-color .15s; display:inline-block;}
+    .btn-primary:hover{ background:#8b2323; }
+    .btn-ghost{ padding:.5rem .75rem; border-radius:8px; border:1px solid #d1d5db; background:#fff; color:#374151; transition:background-color .15s; display:inline-block;}
+    .btn-ghost:hover{ background:#f9fafb; }
+    .card{ background:#fff; border-radius:.5rem; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+    .card-header{ padding:1rem 1.5rem; border-bottom:1px solid #e5e7eb; }
+    .muted{ color:#5f6368; }
+  </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex h-screen">
-        <aside class="w-64 bg-white shadow-lg sidebar">
-            <div class="bg-primary p-4 border-b">
-                <span class="font-['Pacifico'] text-2xl text-white">Student Query</span>
-            </div>
-            <nav class="p-4 space-y-2">
-                <a href="{% url 'student_dashboard' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-dashboard-line"></i>
-                    </div>
-                    <span class="ml-3">Dashboard</span>
-                </a>
-                <a href="{% url 'student_my_queries' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-question-line"></i>
-                    </div>
-                    <span class="ml-3">My Queries</span>
-                </a>
-                <a href="{% url 'student_new_query' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-button">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-add-circle-line"></i>
-                    </div>
-                    <span class="ml-3">New Query</span>
-                </a>
-                <a href="{% url 'student_profile_settings' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-button">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-user-settings-line"></i>
-                    </div>
-                    <span class="ml-3">Account Settings</span>
-                </a>
-            </nav>
-        </aside>
 
-        <main class="flex-1 overflow-auto main-content">
-            <header class="bg-primary shadow-sm text-white">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div class="flex items-center">
-                        <button id="sidebarToggle" class="mr-4 block md:hidden p-2 text-white hover:bg-red-800 rounded-full">
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-menu-line"></i>
-                            </div>
-                        </button>
-                        <h1 class="text-xl font-semibold">Submit New Query</h1>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="p-2 text-white hover:bg-red-800 rounded-full">
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-notification-line"></i>
-                            </div>
-                        </button>
-                        <div class="relative">
-                            <button id="userMenuBtn" class="flex items-center space-x-2 cursor-pointer">
-                                <img src="https://ui-avatars.com/api/?name=Student+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full object-cover" alt="Profile">
-                                <span class="text-sm font-medium">John Smith</span>
-                            </button>
-                            <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1">
-                                <a href="{% url 'student_profile_settings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                                <a href="{% url 'student_profile_settings' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <div class="p-6 space-y-6">
-                <div class="bg-white rounded shadow-sm">
-                    <div class="card-header">
-                        <h3 class="text-base font-semibold">Query Form</h3>
-                    </div>
-                    <div class="p-6">
-                        <form id="queryForm" method="POST" action="">
-                            {% csrf_token %}
-                            <div class="space-y-6">
-                                <!-- Query Category Selection -->
-                                <div>
-                                    <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Query Category</label>
-                                    <select id="category" name="category" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
-                                        <option value="">Select a category</option>
-                                        <option value="academic">IT</option>
-                                        <option value="financial">Maintaince</option>
-                                        <option value="technical">Rector</option>
-                                        <option value="administrative">Warden</option>
-                                        <option value="other">Administration</option>
-                                    </select>
-                                </div>
-
-                                <!-- Subject/Title -->
-                                <div>
-                                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                                    <input type="text" id="subject" name="subject" placeholder="Brief title for your query" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
-                                </div>
-
-                                <!-- Priority Selection -->
-                                <div>
-                                    <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                                    <select id="priority" name="priority" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
-                                        <option value="low">Low</option>
-                                        <option value="medium" selected>Medium</option>
-                                        <option value="high">High</option>
-                                    </select>
-                                </div>
-
-                                <!-- Description -->
-                                <div>
-                                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                    <textarea id="description" name="description" rows="6" placeholder="Please provide details about your query" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20"></textarea>
-                                </div>
-
-                                <!-- File Attachment -->
-                                <div>
-                                    <label for="attachment" class="block text-sm font-medium text-gray-700 mb-1">Attachments (Optional)</label>
-                                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                        <div class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4h-12m4-12v8m0 0v4m0 0h12a4 4 0 00.01-1v-7m-4 0h-12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-gray-600">
-                                                <label for="file-upload" class="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
-                                                    <span>Upload a file</span>
-                                                    <input id="file-upload" name="file-upload" type="file" class="sr-only">
-                                                </label>
-                                                <p class="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p class="text-xs text-gray-500">
-                                                PNG, JPG, PDF up to 10MB
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Agree to Terms -->
-                                <div class="flex items-start">
-                                    <div class="flex items-center h-5">
-                                        <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                    </div>
-                                    <div class="ml-3 text-sm">
-                                        <label for="terms" class="font-medium text-gray-700">I acknowledge that my query will be reviewed by the appropriate department staff</label>
-                                    </div>
-                                </div>
-
-                                <!-- Submit & Cancel Buttons -->
-                                <div class="flex justify-end space-x-3">
-                                    <a href="{% url 'student_dashboard' %}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                                        Cancel
-                                    </a>
-                                    <button type="submit" class="btn-primary">
-                                        Submit Query
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded shadow-sm">
-                    <div class="card-header">
-                        <h3 class="text-base font-semibold">Guidelines for Submitting Queries</h3>
-                    </div>
-                    <div class="p-6">
-                        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-600">
-                            <li>Be specific about your issue to help us resolve it faster.</li>
-                            <li>Include relevant details such as course codes, transaction references, or error messages.</li>
-                            <li>Attach screenshots if applicable to help illustrate the issue.</li>
-                            <li>Allow up to 48 hours for a response to your query.</li>
-                            <li>For urgent matters requiring immediate attention, please contact the department directly by phone.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </main>
+<body class="min-h-screen bg-gray-100">
+  <!-- Fixed sidebar to match app -->
+  <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+    <div class="bg-primary p-4 border-b">
+      <span class="font-['Pacifico'] text-2xl text-white">Student Query</span>
     </div>
+    <nav class="p-4 space-y-2">
+      <a href="{% url 'student_dashboard' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-[8px]">
+        <i class="ri-dashboard-line w-5 h-5 flex items-center justify-center"></i>
+        <span class="ml-3">Dashboard</span>
+      </a>
+      <a href="{% url 'student_my_queries' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-[8px]">
+        <i class="ri-question-line w-5 h-5 flex items-center justify-center"></i>
+        <span class="ml-3">My Queries</span>
+      </a>
+      <a href="{% url 'student_new_query' %}" class="flex items-center p-3 text-primary bg-red-50 rounded-[8px]">
+        <i class="ri-add-circle-line w-5 h-5 flex items-center justify-center"></i>
+        <span class="ml-3">New Query</span>
+      </a>
+      <a href="{% url 'student_profile_settings' %}" class="flex items-center p-3 text-gray-600 hover:bg-gray-50 rounded-[8px]">
+        <i class="ri-user-settings-line w-5 h-5 flex items-center justify-center"></i>
+        <span class="ml-3">Account Settings</span>
+      </a>
+    </nav>
+  </aside>
 
+  <!-- Main area shifted right -->
+  <main class="ml-64 min-h-screen">
+    <header class="bg-primary text-white sticky top-0 z-10">
+      <div class="flex items-center justify-between px-6 py-4">
+        <h1 class="text-xl font-semibold">Submit New Query</h1>
+        <div class="flex items-center space-x-4">
+          <button class="p-2 text-white hover:bg-red-800 rounded-full"><i class="ri-notification-line w-5 h-5"></i></button>
+          <img src="https://ui-avatars.com/api/?name=Student+User&background=8b2323&color=fff" class="w-8 h-8 rounded-full" alt="Profile">
+        </div>
+      </div>
+    </header>
 
-<script type="module">
-    // Import necessary Firebase modules
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    <div class="max-w-5xl mx-auto p-6 space-y-6">
 
-    // Firebase configuration
-    const firebaseConfig = {
-            apiKey: "AIzaSyDfrHzrvoiyddmNtn6XR1gc3sM3OjI7QKM",
-            authDomain: "issuetracker-c1daa.firebaseapp.com",
-            projectId: "issuetracker-c1daa",
-            storageBucket: "issuetracker-c1daa.appspot.com",
-            messagingSenderId: "578054110155",
-            appId: "1:578054110155:web:3dcf5a838a801803c3944e"
-        };
+      <!-- 1) AI RECOMMENDATION at TOP -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-base font-semibold">AI Recommendation</h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <div>
+            <label for="ai_description" class="block text-sm font-medium text-gray-700 mb-1">Describe your issue</label>
+            <textarea id="ai_description" rows="6" placeholder="Type your complaint or issue here..." class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20"></textarea>
+          </div>
 
+          <div class="flex items-center justify-between">
+            <p id="ai-status" class="text-sm muted"></p>
+            <button type="button" id="ai-run" class="btn-ghost">Get Recommendation</button>
+          </div>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+          <div id="ai-result" class="hidden">
+            <p id="ai-meta" class="font-medium"></p>
+            <p id="ai-summary" class="mt-1 text-sm text-gray-700"></p>
+            <div id="ai-steps" class="mt-2"></div>
+            <div id="ai-verify" class="mt-4"></div>
+            <!-- actions appear after analysis -->
+            <div id="ai-actions" class="hidden mt-4 flex gap-3">
+              <button type="button" id="open-ticket-btn" class="btn-primary hidden"
+                      onclick="revealForm('nontech')">Open Ticket</button>
+              <button type="button" id="escalate-btn" class="btn-primary hidden"
+                      onclick="revealForm('tech')">Escalate to Support</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const queryForm = document.getElementById('queryForm');
-        
-        // Listen for authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (queryForm) {
-                queryForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    // Check if user is authenticated
-                    if (!user) {
-                        alert('Please log in to submit a query.');
-                        return;
-                    }
+      <!-- 2) FULL FORM (HIDDEN until student chooses action) -->
+      <div id="full-form" class="card hidden">
+        <div class="card-header">
+          <h3 class="text-base font-semibold">Query Form</h3>
+        </div>
+        <div class="p-6">
+          <form id="queryForm" method="POST" action="">
+            {% csrf_token %}
 
-                    // Form validation
-                    const termsCheckbox = document.getElementById('terms');
-                    const category = document.getElementById('category').value;
-                    const subject = document.getElementById('subject').value;
-                    const description = document.getElementById('description').value;
-                    const priority = document.getElementById('priority').value;
-                    const fileInput = document.getElementById('file-upload');
+            <!-- hidden ai fields that get posted -->
+            <input type="hidden" name="ai_is_technical" id="ai_is_technical" />
+            <input type="hidden" name="ai_category"     id="ai_category" />
+            <input type="hidden" name="ai_record_id"    id="ai_record_id" />
 
-                    // Validate required fields
-                    if (!termsCheckbox.checked) {
-                        alert('Please acknowledge the terms before submitting.');
-                        return;
-                    }
+            <div class="space-y-6">
+              <div>
+                <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Query Category</label>
+                <select id="category" name="category" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                  <option value="">Select a category</option>
+                  <option value="academic">IT</option>
+                  <option value="financial">Maintaince</option>
+                  <option value="technical">Rector</option>
+                  <option value="administrative">Warden</option>
+                  <option value="other">Administration</option>
+                </select>
+              </div>
 
-                    if (!category || !subject || !description) {
-                        alert('Please fill out all required fields.');
-                        return;
-                    }
+              <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <input type="text" id="subject" name="subject" placeholder="Brief title for your query" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+              </div>
 
-                    try {
-                        // Handle file attachments
-                        const attachments = [];
-                        if (fileInput.files.length > 0) {
-                            for (let file of fileInput.files) {
-                                // In a production app, upload to Firebase Storage
-                                // Here we're just storing the file name
-                                attachments.push(file.name);
-                            }
-                        }
+              <div>
+                <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                <select id="priority" name="priority" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
 
-                        // Prepare query data
-                        const queryData = {
-                            user_id: user.uid,
-                            category: category,
-                            subject: subject,
-                            description: description,
-                            priority: priority,
-                            status: 'Pending',
-                            attachments: attachments,
-                            created_at: serverTimestamp(),
-                            updated_at: serverTimestamp(),
-                            assigned_to: null,
-                            resolution_notes: ''
-                        };
+              <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea id="description" name="description" rows="6" placeholder="Please provide details about your query" class="w-full border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20"></textarea>
+              </div>
 
-                        // Add document to Firestore
-                        const docRef = await addDoc(collection(db, 'queries'), queryData);
+              <div>
+                <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-1">Attachments (Optional)</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div class="space-y-1 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4h-12m4-12v8m0 0v4m0 0h12a4 4 0 00.01-1v-7m-4 0h-12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="flex text-sm text-gray-600">
+                      <label for="file-upload" class="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary">
+                        <span>Upload a file</span>
+                        <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                      </label>
+                      <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
+                  </div>
+                </div>
+              </div>
 
-                        // Success notification
-                        alert(`Query submitted successfully! Reference: Q-${docRef.id.substr(-4)}`);
-                        
-                        // Redirect to dashboard
-                        window.location.href = 'student-dashboard.html';
-                    } catch (error) {
-                        console.error('Error submitting query:', error);
-                        alert('Failed to submit query. Please try again.');
-                    }
-                });
-            }
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                  <label for="terms" class="font-medium text-gray-700">I acknowledge that my query will be reviewed by the appropriate department staff</label>
+                </div>
+              </div>
+
+              <div class="flex justify-end space-x-3">
+                <a href="{% url 'student_dashboard' %}" class="btn-ghost">Cancel</a>
+                <button id="submitBtn" type="submit" class="btn-primary">Submit Query</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // CSRF helper
+    function getCookie(name){
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // reveal the full form after the student chooses to open/escalate
+    function revealForm(mode){
+      const full = document.getElementById('full-form');
+      const aiDesc = document.getElementById('ai_description');
+      const formDesc = document.getElementById('description');
+      const submitBtn = document.getElementById('submitBtn');
+
+      // copy description from AI box into the real form
+      formDesc.value = aiDesc.value || '';
+
+      // label the submit button
+      submitBtn.textContent = (mode === 'tech') ? 'Escalate to Support' : 'Open Ticket';
+
+      full.classList.remove('hidden');
+      // scroll into view nicely
+      setTimeout(() => full.scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+    }
+
+    (function(){
+      const runBtn   = document.getElementById('ai-run');
+      const statusEl = document.getElementById('ai-status');
+      const box      = document.getElementById('ai-result');
+      const meta     = document.getElementById('ai-meta');
+      const summary  = document.getElementById('ai-summary');
+      const stepsBox = document.getElementById('ai-steps');
+      const verifyBox= document.getElementById('ai-verify');
+      const aiDesc   = document.getElementById('ai_description');
+
+      const nonTechBtn = document.getElementById('open-ticket-btn');
+      const techBtn    = document.getElementById('escalate-btn');
+      const actions    = document.getElementById('ai-actions');
+
+      // hidden fields on the real form
+      const hidTech  = document.getElementById('ai_is_technical');
+      const hidCat   = document.getElementById('ai_category');
+      const hidId    = document.getElementById('ai_record_id');
+
+      function renderSteps(steps){
+        stepsBox.innerHTML = '';
+        if (!Array.isArray(steps) || !steps.length) return;
+
+        const title = document.createElement('div');
+        title.className = 'font-semibold mt-2';
+        title.textContent = 'Steps to apply';
+        stepsBox.appendChild(title);
+
+        const ol = document.createElement('ol');
+        ol.className = 'list-decimal pl-6 text-sm text-gray-700 space-y-2';
+        steps.forEach(s => {
+          const li = document.createElement('li');
+
+          // s can be a string or { text, commands }
+          const text   = (typeof s === 'string') ? s : (s.text || '');
+          const cmds   = (typeof s === 'object' && Array.isArray(s.commands)) ? s.commands : [];
+
+          li.textContent = text;
+
+          if (cmds.length){
+            const pre = document.createElement('pre');
+            pre.className = 'mt-1 bg-gray-50 border rounded p-2 text-xs overflow-x-auto';
+            pre.textContent = cmds.join('\n');
+            li.appendChild(pre);
+          }
+
+          ol.appendChild(li);
         });
-    });
+        stepsBox.appendChild(ol);
+      }
 
-        
-        
+      function renderVerify(list){
+        verifyBox.innerHTML = '';
+        if (!Array.isArray(list) || !list.length) return;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // User menu toggle
-            const userMenuBtn = document.getElementById('userMenuBtn');
-            const userMenu = document.getElementById('userMenu');
-            
-            if (userMenuBtn && userMenu) {
-                userMenuBtn.addEventListener('click', function() {
-                    userMenu.classList.toggle('hidden');
-                });
+        const title = document.createElement('div');
+        title.className = 'font-semibold mt-4';
+        title.textContent = 'Verify';
+        verifyBox.appendChild(title);
 
-                // Close menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (userMenuBtn && userMenu && !userMenuBtn.contains(e.target) && !userMenu.contains(e.target)) {
-                        userMenu.classList.add('hidden');
-                    }
-                });
-            }
-
-            // Mobile sidebar toggle
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    document.body.classList.toggle('sidebar-open');
-                });
-            }
-
-            // Form submission
-            const queryForm = document.getElementById('queryForm');
-            if (queryForm) {
-                queryForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    // Check if terms checkbox is checked
-                    const termsCheckbox = document.getElementById('terms');
-                    if (!termsCheckbox.checked) {
-                        alert('Please acknowledge the terms before submitting.');
-                        return;
-                    }
-                    
-                    // Basic validation
-                    const category = document.getElementById('category').value;
-                    const subject = document.getElementById('subject').value;
-                    const description = document.getElementById('description').value;
-                    
-                    if (!category || !subject || !description) {
-                        alert('Please fill out all required fields.');
-                        return;
-                    }
-                    
-                    // In a real app, this would submit the form data to the server
-                    alert('Your query has been submitted successfully! Reference: Q-' + Math.floor(1000 + Math.random() * 9000));
-                    
-                    // Redirect to dashboard
-                    window.location.href = 'student-dashboard.html';
-                });
-            }
-
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // In a real app, this would clear the session/token
-                    window.location.href = 'index.html';
-                });
-            }
+        const ul = document.createElement('ul');
+        ul.className = 'list-disc pl-6 text-sm text-gray-700';
+        list.forEach(v => {
+          const li = document.createElement('li');
+          li.textContent = v;
+          ul.appendChild(li);
         });
+        verifyBox.appendChild(ul);
+      }
 
+      runBtn.addEventListener('click', async () => {
+        const text = (aiDesc.value || '').trim();
+        if (!text) { alert('Please enter your description first.'); return; }
 
+        runBtn.disabled = true;
+        statusEl.textContent = 'Thinking…';
+        box.classList.add('hidden');
+        actions.classList.add('hidden');
+        nonTechBtn.classList.add('hidden');
+        techBtn.classList.add('hidden');
+        stepsBox.innerHTML = '';
+        verifyBox.innerHTML = '';   // clear verify area between runs
+        summary.textContent = '';
+        meta.textContent = '';
 
+        try {
+          const res = await fetch("{% url 'student_ai_analyze' %}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": getCookie("csrftoken") },
+            body: JSON.stringify({ text })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.detail || data.error || "Request failed");
 
+          const ui = data.ui || {};
+          meta.textContent    = `Category: ${ui.category || '—'} | Technical: ${ui.is_technical ? 'true' : 'false'}`;
+          summary.textContent = ui.summary || '';
 
+          // render steps + verify
+          renderSteps(ui.steps || []);
+          renderVerify(ui.verify || []);
 
-    </script>
+          // set hidden fields for submission
+          hidTech.value = ui.is_technical ? 'true' : 'false';
+          hidCat.value  = ui.category || '';
+          hidId.value   = ui.ai_record_id || '';
+
+          // show correct action
+          actions.classList.remove('hidden');
+          if (ui.is_technical === false) {
+            nonTechBtn.classList.remove('hidden');   // Open Ticket
+          } else {
+            techBtn.classList.remove('hidden');      // Escalate
+          }
+
+          box.classList.remove('hidden');
+          statusEl.textContent = 'Ready';
+        } catch (e) {
+          statusEl.textContent = 'Error: ' + (e.message || e);
+        } finally {
+          runBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

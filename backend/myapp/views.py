@@ -4,9 +4,11 @@ from django.contrib.auth.models import Group, User
 from django.db import connection
 from django.shortcuts import redirect, render
 from django.utils import timezone
-
 from .models import Complaint, Student
-
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_POST
+from myapp.ai.complaint_agent import ai_agent, for_frontend
+import json
 
 # Profile settings views for each department
 def panel_profile_settings(request):
@@ -349,3 +351,29 @@ def dashboard_it_queries(request):
         return redirect('login')
     complaints = Complaint.objects.filter(category='IT_Support').order_by('-created_at')
     return render(request, 'dashboards/it/it-queries.html', {'complaints': complaints})
+
+
+@require_POST
+def ai_analyze(request):
+    # Accept JSON { "text": "..." } or form-encoded "text=..."
+    ct = request.META.get("CONTENT_TYPE", "")
+    if ct.startswith("application/json"):
+        try:
+            payload = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            return HttpResponseBadRequest("invalid JSON")
+        text = (payload.get("text") or "").strip()
+    else:
+        text = (request.POST.get("text") or "").strip()
+
+    if not text:
+        return HttpResponseBadRequest("text required")
+
+    # call the agent directly (no HTTP between services)
+    result = ai_agent(text, model="gpt-4o-mini", temperature=0.0, max_tokens=1200)
+
+    if isinstance(result, dict) and "error" in result:
+        return JsonResponse({"error": result["error"]}, status=502)
+
+    ui = for_frontend(result)
+    return JsonResponse({"ui": ui, "raw": result})
