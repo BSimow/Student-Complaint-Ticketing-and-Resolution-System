@@ -7,8 +7,11 @@ from django.utils import timezone
 from .models import Complaint, Student
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
-from myapp.ai.complaint_agent import ai_agent, for_frontend
+from django.http import JsonResponse
 import json
+from rest_framework import viewsets
+from .models import Complaint
+from .serializers import ComplaintSerializer
 
 # Profile settings views for each department
 def panel_profile_settings(request):
@@ -100,6 +103,15 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'login.html')
+
+def run_ai(request):
+    from myapp.ai.complaint_agent import for_frontend, AIConfigError  # lazy import
+    q = request.GET.get("q", "")
+    try:
+        data = for_frontend(q)
+        return JsonResponse(data)
+    except AIConfigError as e:
+        return JsonResponse ({"error": str(e)}, status=500)
 
 # Helper function to redirect user to the correct dashboard based on group
 
@@ -351,6 +363,10 @@ def dashboard_it_queries(request):
         return redirect('login')
     complaints = Complaint.objects.filter(category='IT_Support').order_by('-created_at')
     return render(request, 'dashboards/it/it-queries.html', {'complaints': complaints})
+
+class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all().order_by('-created_at')
+    serializer_class = ComplaintSerializer
 
 
 @require_POST

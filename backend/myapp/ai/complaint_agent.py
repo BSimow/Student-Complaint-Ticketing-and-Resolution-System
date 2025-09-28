@@ -12,6 +12,36 @@ import re
 import time
 from openai import APIConnectionError, RateLimitError, APIStatusError
 import httpx
+from functools import lru_cache
+
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None  # allow Django to boot for admin/migrations etc.
+
+class AIConfigError(RuntimeError):
+    pass
+
+@lru_cache
+def get_client():
+    if OpenAI is None:
+        raise AIConfigError("Package 'openai' is not installed. Run: pip install openai")
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise AIConfigError("OPENAI_API_KEY is missing. Add it to backend/.env")
+    return OpenAI(api_key=api_key)
+
+def ai_agent(prompt: str) -> str:
+    client = get_client()
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return resp.choices[0].message.content
+
+def for_frontend(text: str) -> dict:
+    return {"result": ai_agent(text)}
+
 LLM_TIMEOUT_S = int(os.getenv("LLM_TIMEOUT", "25"))  # 25s hard limit
 
 # For Windows consoles with Arabic/Unicode text

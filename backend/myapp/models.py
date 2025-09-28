@@ -58,7 +58,15 @@ class Complaint(models.Model):
 		('IT_Support', 'IT Support'),
 		('Courses_Training', 'Courses & Training'),
 		('Facilities_Logistics', 'Facilities & Logistics'),
+		('technical', 'Technical'),
+        ('non_technical', 'Non-Technical'),
 	]
+
+	title = models.CharField(max_length=200)
+	description = models.TextField()
+	category = models.CharField(max_length=32, choices=CATEGORY_CHOICES)
+	status = models.CharField(max_length=32, default='new')  # new|in_progress|resolved
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	PRIORITY_CHOICES = [
 		('Low', 'Low'),
