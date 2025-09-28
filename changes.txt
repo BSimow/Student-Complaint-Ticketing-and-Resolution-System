@@ -1,0 +1,29 @@
+Here’s a short checklist of what you changed:
+
+Created myapp/serializers.py with ComplaintSerializer.
+
+Moved/kept ComplaintViewSet inside myapp/views.py (not views_api.py).
+
+Updated backend/backend/urls.py to import ComplaintViewSet from myapp.views and registered the DRF router at /api/.
+
+Simplified myapp/urls.py to only page routes (e.g., run_ai, dashboard) and imported views properly—no router/ViewSet imports or self-includes.
+
+Made myapp/ai/complaint_agent.py lazy:
+
+removed module-level key checks,
+
+added get_client() with @lru_cache,
+
+introduced AIConfigError,
+
+no errors on import.
+
+Moved AI imports inside run_ai() in views.py; fixed the JsonResponse({...}, status=500) parentheses.
+
+Loaded environment variables in settings.py via load_dotenv(BASE_DIR / ".env"); created backend/.env with OPENAI_API_KEY.
+
+Activated the virtual env correctly in PowerShell using Activate.ps1.
+
+Installed required packages: djangorestframework, django-cors-headers, openai, python-dotenv.
+
+Eliminated circular imports/recursion by keeping DRF router only in project urls.py and avoiding cross-imports between views.py and urls.py.
