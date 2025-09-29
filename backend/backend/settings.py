@@ -10,34 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-# from pathlib import Path
-# import os
-# from dotenv import load_dotenv
-# import logging
-# logging.basicConfig(level=logging.DEBUG)
-
-
-# # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-# load_dotenv(BASE_DIR.parent / ".env")              # loads repo-root/.env
-
-# if os.getenv("OPENAI_API_KEY"):
-#     print("OpenAI Key loaded: True")
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR.parent / ".env")  # loads repo-root/.env
+load_dotenv(BASE_DIR.parent / ".env")              # loads repo-root/.env
 
 if os.getenv("OPENAI_API_KEY"):
-    logging.debug("OpenAI Key loaded")
-else:
-    logging.warning("OpenAI Key not found!")
+    print("OpenAI Key loaded: True")
 
 
 
@@ -105,23 +87,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'university_complaints',
-#         'USER': 'root',
-#         'PASSWORD': '654321',
-#         'HOST': 'localhost',   # or the server IP
-#         'PORT': '3307',        # default MySQL port
-#         'OPTIONS': {
-#             'charset': 'utf8mb4',
-#         },
-#     }
-# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",  # ملف قاعدة البيانات بيتخزن في المشروع
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'university_complaints',
+        'USER': 'root',
+        'PASSWORD': '654321',
+        'HOST': 'localhost',   # or the server IP
+        'PORT': '3307',        # default MySQL port
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 

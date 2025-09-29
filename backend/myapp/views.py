@@ -8,8 +8,7 @@ from .models import Complaint, Student
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
 from myapp.ai.complaint_agent import ai_agent, for_frontend
-from .ml.inference import predict_category
-import json, traceback
+import json
 
 # Profile settings views for each department
 def panel_profile_settings(request):
@@ -378,33 +377,3 @@ def ai_analyze(request):
 
     ui = for_frontend(result)
     return JsonResponse({"ui": ui, "raw": result})
-
-@require_POST
-def classify_api(request):
-    # 1) اقرأ النص JSON أو form
-    ctype = request.headers.get("Content-Type", "")
-    try:
-        if "application/json" in ctype:
-            body = json.loads(request.body.decode("utf-8") or "{}")
-            text = (body.get("text") or "").strip()
-        else:
-            text = (request.POST.get("text") or "").strip()
-    except Exception as e:
-        return JsonResponse({"error": f"bad_request: {e}"}, status=400)
-
-    if not text:
-        return JsonResponse({"error": "Empty text"}, status=400)
-
-    # 2) شغّل المصنّف مع إمساك أي Exceptions
-    try:
-        from .ml.inference import predict_category  # import هنا لتفادي مشاكل import وقت الإقلاع
-        res = predict_category(text)
-        return JsonResponse(res, status=200)
-    except Exception as e:
-        # اطبع الستاك في الكونسول + رجّع رسالة مفهومة للفرونت
-        traceback.print_exc()
-        return JsonResponse(
-            {"error": f"classifier_failed: {e.__class__.__name__}: {e}"},
-            status=500
-        )
-
