@@ -92,18 +92,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'university_complaints',
-        'USER': 'root',
-        'PASSWORD': '654321',
-        'HOST': 'localhost',   # or the server IP
-        'PORT': '3307',        # default MySQL port
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
-    }
+  'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'student_complaints',   # your DB name
+    'USER': 'root',                 # your user
+    'PASSWORD': 'your_password',    # your password
+    'HOST': '127.0.0.1',            # not 'localhost'
+    'PORT': '3306',
+    'OPTIONS': {
+        'charset': 'utf8mb4',
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    },
+  }
 }
+
 
 
 # Password validation

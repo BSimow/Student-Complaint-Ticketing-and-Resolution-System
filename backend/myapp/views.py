@@ -12,6 +12,11 @@ import json
 from rest_framework import viewsets
 from .models import Complaint
 from .serializers import ComplaintSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from .models import Complaint
 
 # Profile settings views for each department
 def panel_profile_settings(request):
@@ -104,6 +109,13 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     return render(request, 'login.html')
 
+class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all().order_by('-created_at')
+    serializer_class = ComplaintSerializer
+
+def dashboard_view(request):
+    return render(request, "dashboard.html")
+
 def run_ai(request):
     from myapp.ai.complaint_agent import for_frontend, AIConfigError  # lazy import
     q = request.GET.get("q", "")
@@ -111,7 +123,7 @@ def run_ai(request):
         data = for_frontend(q)
         return JsonResponse(data)
     except AIConfigError as e:
-        return JsonResponse ({"error": str(e)}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)
 
 # Helper function to redirect user to the correct dashboard based on group
 
@@ -393,3 +405,22 @@ def ai_analyze(request):
 
     ui = for_frontend(result)
     return JsonResponse({"ui": ui, "raw": result})
+
+@api_view(['GET'])
+def kpis(request):
+    total = Complaint.objects.count()
+    by_status = Complaint.objects.values('status').annotate(c=Count('id')).order_by()
+    # optional: by_department if you have that field
+    try:
+        by_department = Complaint.objects.values('department').annotate(c=Count('id')).order_by()
+    except Exception:
+        by_department = []
+    ts = (Complaint.objects
+          .annotate(d=TruncDate('created_at'))
+          .values('d').annotate(c=Count('id')).order_by('d'))
+    return Response({
+        "total": total,
+        "by_status": list(by_status),
+        "by_department": list(by_department),  # falls back to []
+        "timeseries": list(ts),
+    })

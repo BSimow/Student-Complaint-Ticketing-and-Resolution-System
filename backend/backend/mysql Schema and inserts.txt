@@ -1,0 +1,144 @@
+-- Create Database
+CREATE DATABASE IF NOT EXISTS university_complaints
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE university_complaints;
+
+-- Students
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(255)
+);
+
+-- Complaints
+CREATE TABLE Complaints (
+    complaint_id INT PRIMARY KEY,
+    student_id INT,
+    title VARCHAR(255),
+    category VARCHAR(255),
+    description TEXT,
+    priority VARCHAR(50),
+    status VARCHAR(50),
+    created_at DATETIME,
+    resolved_at DATETIME,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+);
+
+-- Teams
+CREATE TABLE Teams (
+    team_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255)
+);
+
+-- Resolutions
+CREATE TABLE Resolutions (
+    resolution_id INT PRIMARY KEY,
+    complaint_id INT,
+    team_id INT,
+    notes TEXT,
+    resolved_date DATETIME,
+    FOREIGN KEY (complaint_id) REFERENCES Complaints(complaint_id),
+    FOREIGN KEY (team_id) REFERENCES Teams(team_id)
+);
+
+-- Feedback
+CREATE TABLE Feedback (
+    feedback_id INT PRIMARY KEY,
+    complaint_id INT,
+    student_id INT,
+    rating INT,
+    comment TEXT,
+    feedback_date DATETIME,
+    FOREIGN KEY (complaint_id) REFERENCES Complaints(complaint_id),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+);
+
+-- Attachments
+CREATE TABLE Attachments (
+    attachment_id INT PRIMARY KEY,
+    complaint_id INT,
+    file_path VARCHAR(255),
+    file_type VARCHAR(50),
+    FOREIGN KEY (complaint_id) REFERENCES Complaints(complaint_id)
+);
+
+-- =========================
+-- Insert Data
+-- =========================
+
+-- Students
+INSERT INTO Students (student_id, name, email, phone) VALUES
+(1, 'Ahmed Hassan', 'ahmedhassan11@gmail.com', '01012345678'),
+(2, 'Sara Ali', 'saraali22@gmail.com', '01122334455'),
+(3, 'Mohamed Youssef', 'mohamedyoussef33@gmail.com', '01099887766'),
+(4, 'Mona Ibrahim', 'monaibrahim44@gmail.com', '01233445566'),
+(5, 'Omar Khaled', 'omarkhaled55@gmail.com', '01511223344'),
+(6, 'Layla Mahmoud', 'laylamahmoud66@gmail.com', '01044556677'),
+(7, 'Khaled Mostafa', 'khaledmostafa77@gmail.com', '01177889900'),
+(8, 'Nour Adel', 'nouradel88@gmail.com', '01266778899'),
+(9, 'Hassan Tarek', 'hassantarek99@gmail.com', '01522334455'),
+(10, 'Aya Gamal', 'ayagamal12@gmail.com', '01033445566');
+
+-- Complaints
+INSERT INTO Complaints (complaint_id, student_id, title, category, description, priority, status, created_at, resolved_at) VALUES
+(1, 1, 'Delay in certificate issuance', 'Certificates_Documents', 'Graduation certificate not ready on time.', 'High', 'Resolved', '2023-11-10 09:30:00', '2023-11-12 14:00:00'),
+(2, 2, 'Tuition fee discrepancy', 'Finance_Admin', 'Incorrect amount shown in the tuition fee invoice.', 'Medium', 'Open', '2023-12-01 11:15:00', NULL),
+(3, 3, 'Wi-Fi not working in dorm', 'IT_Support', 'Internet connection is down in dorm building A.', 'High', 'In Progress', '2023-12-05 13:00:00', NULL),
+(4, 4, 'Training schedule conflict', 'Courses_Training', 'Two training courses overlap in timing.', 'Medium', 'Resolved', '2023-10-15 10:00:00', '2023-10-17 16:00:00'),
+(5, 5, 'Broken chair in lecture hall', 'Facilities_Logistics', 'Chair in lecture hall 3 is broken.', 'Low', 'Open', '2023-12-08 08:45:00', NULL),
+(6, 6, 'Library book missing', 'Facilities_Logistics', 'Reserved book not found in library.', 'Medium', 'Open', '2023-12-10 15:20:00', NULL),
+(7, 7, 'Exam schedule clash', 'Courses_Training', 'Two exams scheduled at the same time.', 'High', 'In Progress', '2023-12-11 09:30:00', NULL),
+(8, 8, 'Cafeteria food issue', 'Facilities_Logistics', 'Food quality in cafeteria is poor.', 'Low', 'Open', '2023-12-12 13:15:00', NULL),
+(9, 9, 'AC not working in class', 'Facilities_Logistics', 'Air conditioner in room B2 not working.', 'Medium', 'Resolved', '2023-12-13 10:00:00', '2023-12-14 16:30:00'),
+(10, 10, 'Email account locked', 'IT_Support', 'Student email account access denied.', 'High', 'Resolved', '2023-12-14 11:45:00', '2023-12-15 14:10:00');
+
+-- Teams
+INSERT INTO Teams (team_id, name, email) VALUES
+(1, 'Certificates & Documents Office', 'certificates@university.com'),
+(2, 'Finance & Administration', 'finance@university.com'),
+(3, 'IT Support Team', 'itsupport@university.com'),
+(4, 'Courses & Training Dept.', 'training@university.com'),
+(5, 'Facilities & Logistics', 'facilities@university.com');
+
+-- Resolutions
+INSERT INTO Resolutions (resolution_id, complaint_id, team_id, notes, resolved_date) VALUES
+(1, 1, 1, 'Certificate printed and delivered.', '2023-11-12 14:00:00'),
+(2, 2, 2, 'Finance team investigating discrepancy.', NULL),
+(3, 3, 3, 'Replaced faulty router in dorm building A.', NULL),
+(4, 4, 4, 'Course rescheduled to avoid timing conflict.', '2023-10-17 16:00:00'),
+(5, 5, 5, 'Maintenance scheduled for chair replacement.', NULL),
+(6, 6, 5, 'Library staff reordered the missing book.', NULL),
+(7, 7, 4, 'Course & Training Dept. handling exam reschedule.', NULL),
+(8, 8, 5, 'Facilities inspected cafeteria and warned provider.', NULL),
+(9, 9, 5, 'Technicians repaired the AC unit.', '2023-12-14 16:30:00'),
+(10, 10, 3, 'Password reset and email unlocked.', '2023-12-15 14:10:00');
+
+-- Feedback
+INSERT INTO Feedback (feedback_id, complaint_id, student_id, rating, comment, feedback_date) VALUES
+(1, 1, 1, 5, 'Certificate received, thanks!', '2023-11-13 09:00:00'),
+(2, 2, 2, 2, 'Fee issue still not solved.', '2023-12-02 12:00:00'),
+(3, 3, 3, 3, 'Internet partially fixed but unstable.', '2023-12-06 14:10:00'),
+(4, 4, 4, 4, 'Schedule conflict solved, much better now.', '2023-10-18 11:20:00'),
+(5, 5, 5, 3, 'Chair still broken, waiting for fix.', '2023-12-09 10:00:00'),
+(6, 6, 6, 3, 'Still waiting for the book.', '2023-12-11 16:00:00'),
+(7, 7, 7, 2, 'Exams issue stressful, needs quick fix.', '2023-12-12 12:00:00'),
+(8, 8, 8, 3, 'Food improved slightly.', '2023-12-13 14:20:00'),
+(9, 9, 9, 5, 'AC fixed, classroom comfortable now.', '2023-12-15 09:10:00'),
+(10, 10, 10, 4, 'Email issue solved quickly.', '2023-12-16 10:30:00');
+
+-- Attachments
+INSERT INTO Attachments (attachment_id, complaint_id, file_path, file_type) VALUES
+(1, 1, '/uploads/complaints/1/certificate_request.pdf', 'pdf'),
+(2, 2, '/uploads/complaints/2/fee_invoice.png', 'png'),
+(3, 3, '/uploads/complaints/3/wifi_issue.jpg', 'jpg'),
+(4, 4, '/uploads/complaints/4/training_conflict.pdf', 'pdf'),
+(5, 5, '/uploads/complaints/5/broken_chair.png', 'png'),
+(6, 6, '/uploads/complaints/6/library_request.pdf', 'pdf'),
+(7, 7, '/uploads/complaints/7/exam_schedule.png', 'png'),
+(8, 8, '/uploads/complaints/8/cafeteria_food.jpg', 'jpg'),
+(9, 9, '/uploads/complaints/9/ac_issue.pdf', 'pdf'),
+(10, 10, '/uploads/complaints/10/email_locked.png', 'png');

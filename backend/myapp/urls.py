@@ -3,10 +3,11 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from myapp.views import ComplaintViewSet
+from myapp.views import ComplaintViewSet, kpis
+from .views import run_ai, dashboard_view   
 
 router = DefaultRouter()
-router.register(r'complaints', ComplaintViewSet)
+router.register(r'complaints', ComplaintViewSet, basename='complaints')
 
 urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
@@ -43,6 +44,8 @@ urlpatterns = [
     path("student/ai/analyze/", views.ai_analyze, name="student_ai_analyze"),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),  # your API will be at /api/complaints/
-    path('', include('myapp.urls')),
-    path("run-ai/", views.run_ai, name="run_ai")
+    #path('', include('myapp.urls')),
+    path("run-ai/", views.run_ai, name="run_ai"),
+    path("dashboard/", dashboard_view, name="dashboard"),
+    path('api/kpis/', kpis),
 ]

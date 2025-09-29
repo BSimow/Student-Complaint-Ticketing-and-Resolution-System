@@ -22,25 +22,21 @@ except ImportError:
 class AIConfigError(RuntimeError):
     pass
 
-@lru_cache
-def get_client():
-    if OpenAI is None:
-        raise AIConfigError("Package 'openai' is not installed. Run: pip install openai")
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise AIConfigError("OPENAI_API_KEY is missing. Add it to backend/.env")
-    return OpenAI(api_key=api_key)
+class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all().order_by('-created_at')
+    serializer_class = ComplaintSerializer
 
-def ai_agent(prompt: str) -> str:
-    client = get_client()
-    resp = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return resp.choices[0].message.content
+def dashboard_view(request):
+    return render(request, "dashboard.html")
 
-def for_frontend(text: str) -> dict:
-    return {"result": ai_agent(text)}
+def run_ai(request):
+    from myapp.ai.complaint_agent import for_frontend, AIConfigError  # lazy import
+    q = request.GET.get("q", "")
+    try:
+        data = for_frontend(q)
+        return JsonResponse(data)
+    except AIConfigError as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 LLM_TIMEOUT_S = int(os.getenv("LLM_TIMEOUT", "25"))  # 25s hard limit
 
